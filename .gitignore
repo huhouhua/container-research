@@ -1,5 +1,5 @@
 .DS_Store
-terraform.tfstate
-terraform.tfstate.*.backup
-.terraform
-config.yaml
+module1/demo1/terraform.tfstate
+module1/demo1/terraform.tfstate.*.backup
+module1/demo1/.terraform
+module1/demo1/module/k3s/config.yaml
