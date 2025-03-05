@@ -1,0 +1,357 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  labels:
+    app.kubernetes.io/managed-by: kustomize
+    app.kubernetes.io/name: cronhpa
+    control-plane: controller-manager
+  name: cronhpa-system
+---
+apiVersion: apiextensions.k8s.io/v1
+kind: CustomResourceDefinition
+metadata:
+  annotations:
+    controller-gen.kubebuilder.io/version: v0.15.0
+  name: cronhpas.autoscaling.aiops.com
+spec:
+  group: autoscaling.aiops.com
+  names:
+    kind: CronHPA
+    listKind: CronHPAList
+    plural: cronhpas
+    singular: cronhpa
+  scope: Namespaced
+  versions:
+  - additionalPrinterColumns:
+    - description: The scale target of resource
+      jsonPath: .spec.scaleTargetRef.name
+      name: Target
+      type: string
+    - description: The cron expression
+      jsonPath: .spec.jobs[*].schedule
+      name: Schedule
+      type: string
+    - description: The target size of resource
+      jsonPath: .spec.jobs[*].targetSize
+      name: Target Size
+      type: string
+    name: v1
+    schema:
+      openAPIV3Schema:
+        description: CronHPA is the Schema for the cronhpas API
+        properties:
+          apiVersion:
+            description: |-
+              APIVersion defines the versioned schema of this representation of an object.
+              Servers should convert recognized schemas to the latest internal value, and
+              may reject unrecognized values.
+              More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources
+            type: string
+          kind:
+            description: |-
+              Kind is a string value representing the REST resource this object represents.
+              Servers may infer this from the endpoint the client submits requests to.
+              Cannot be updated.
+              In CamelCase.
+              More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds
+            type: string
+          metadata:
+            type: object
+          spec:
+            description: CronHPASpec defines the desired state of CronHPA
+            properties:
+              jobs:
+                description: Jobs 定义多个扩缩容任务
+                items:
+                  properties:
+                    name:
+                      description: Name 表示扩缩容任务的名称
+                      type: string
+                    schedule:
+                      description: Schedule 表示 Cron 表达式，定义任务的调度时间
+                      type: string
+                    targetSize:
+                      description: TargetSize 表示扩缩容时的目标副本数
+                      type: integer
+                  required:
+                  - name
+                  - schedule
+                  - targetSize
+                  type: object
+                type: array
+              scaleTargetRef:
+                description: ScaleTargetRef 指定要扩缩容的目标工作负载
+                properties:
+                  apiVersion:
+                    description: |-
+                      APIVersion defines the versioned schema of this representation of an object.
+                      Servers should convert recognized schemas to the latest internal value, and
+                      may reject unrecognized values.
+                      More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources
+                    type: string
+                  kind:
+                    description: |-
+                      Kind is a string value representing the REST resource this object represents.
+                      Servers may infer this from the endpoint the client submits requests to.
+                      Cannot be updated.
+                      In CamelCase.
+                      More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds
+                    type: string
+                  name:
+                    type: string
+                required:
+                - name
+                type: object
+            required:
+            - jobs
+            - scaleTargetRef
+            type: object
+          status:
+            description: CronHPAStatus defines the observed state of CronHPA
+            properties:
+              currentReplicas:
+                description: |-
+                  INSERT ADDITIONAL STATUS FIELD - define observed state of cluster
+                  Important: Run "make" to regenerate code after modifying this file
+                  CurrentReplicas 副本数
+                type: integer
+              lastRunTime:
+                additionalProperties:
+                  format: date-time
+                  type: string
+                description: LastRunTime 最后一次job运行时间
+                type: object
+              lastScaleTime:
+                description: LastScaleTime 最后一次扩容时间
+                format: date-time
+                type: string
+            type: object
+        type: object
+    served: true
+    storage: true
+    subresources: {}
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  labels:
+    app.kubernetes.io/managed-by: kustomize
+    app.kubernetes.io/name: cronhpa
+  name: cronhpa-controller-manager
+  namespace: cronhpa-system
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  labels:
+    app.kubernetes.io/managed-by: kustomize
+    app.kubernetes.io/name: cronhpa
+  name: cronhpa-leader-election-role
+  namespace: cronhpa-system
+rules:
+- apiGroups:
+  - "*"
+  resources:
+  - "*"
+  verbs:
+  - get
+  - list
+  - watch
+  - create
+  - update
+  - patch
+  - delete
+- apiGroups:
+  - coordination.k8s.io
+  resources:
+  - leases
+  verbs:
+  - get
+  - list
+  - watch
+  - create
+  - update
+  - patch
+  - delete
+- apiGroups:
+  - "*"
+  resources:
+  - events
+  verbs:
+  - create
+  - patch
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  labels:
+    app.kubernetes.io/managed-by: kustomize
+    app.kubernetes.io/name: cronhpa
+  name: cronhpa-cronhpa-editor-role
+rules:
+- apiGroups:
+  - autoscaling.aiops.com
+  resources:
+  - cronhpas
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
+  - autoscaling.aiops.com
+  resources:
+  - cronhpas/status
+  verbs:
+  - get
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  labels:
+    app.kubernetes.io/managed-by: kustomize
+    app.kubernetes.io/name: cronhpa
+  name: cronhpa-cronhpa-viewer-role
+rules:
+- apiGroups:
+  - autoscaling.aiops.com
+  resources:
+  - cronhpas
+  verbs:
+  - get
+  - list
+  - watch
+- apiGroups:
+  - autoscaling.aiops.com
+  resources:
+  - cronhpas/status
+  verbs:
+  - get
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: cronhpa-manager-role
+rules:
+- apiGroups:
+#  - autoscaling.aiops.com
+  - "*"
+  resources:
+#  - cronhpas
+  - "*"
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
+  - autoscaling.aiops.com
+  resources:
+  - cronhpas/finalizers
+  verbs:
+  - update
+- apiGroups:
+  - autoscaling.aiops.com
+  resources:
+  - cronhpas/status
+  verbs:
+  - get
+  - patch
+  - update
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  labels:
+    app.kubernetes.io/managed-by: kustomize
+    app.kubernetes.io/name: cronhpa
+  name: cronhpa-leader-election-rolebinding
+  namespace: cronhpa-system
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: cronhpa-leader-election-role
+subjects:
+- kind: ServiceAccount
+  name: cronhpa-controller-manager
+  namespace: cronhpa-system
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  labels:
+    app.kubernetes.io/managed-by: kustomize
+    app.kubernetes.io/name: cronhpa
+  name: cronhpa-manager-rolebinding
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: cronhpa-manager-role
+subjects:
+- kind: ServiceAccount
+  name: cronhpa-controller-manager
+  namespace: cronhpa-system
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app.kubernetes.io/managed-by: kustomize
+    app.kubernetes.io/name: cronhpa
+    control-plane: controller-manager
+  name: cronhpa-controller-manager
+  namespace: cronhpa-system
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      control-plane: controller-manager
+  template:
+    metadata:
+      annotations:
+        kubectl.kubernetes.io/default-container: manager
+      labels:
+        control-plane: controller-manager
+    spec:
+      containers:
+      - args:
+        - --leader-elect
+        - --health-probe-bind-address=:8081
+        command:
+        - /manager
+        image: ghcr.io/huhouhua/cronhpa-operator:1.0.0
+        livenessProbe:
+          httpGet:
+            path: /healthz
+            port: 8081
+          initialDelaySeconds: 15
+          periodSeconds: 20
+        name: manager
+        readinessProbe:
+          httpGet:
+            path: /readyz
+            port: 8081
+          initialDelaySeconds: 5
+          periodSeconds: 10
+        resources:
+          limits:
+            cpu: 500m
+            memory: 128Mi
+          requests:
+            cpu: 10m
+            memory: 64Mi
+        securityContext:
+          allowPrivilegeEscalation: false
+          capabilities:
+            drop:
+            - ALL
+      securityContext:
+        runAsNonRoot: true
+      serviceAccountName: cronhpa-controller-manager
+      terminationGracePeriodSeconds: 10

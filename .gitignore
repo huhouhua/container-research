@@ -1,3 +1,4 @@
+.idea
 .DS_Store
 module1/demo1/terraform.tfstate
 module1/demo1/terraform.tfstate.*.backup

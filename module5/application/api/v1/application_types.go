@@ -51,6 +51,9 @@ type ApplicationStatus struct {
 
 // +kubebuilder:object:root=true
 // +kubebuilder:subresource:status
+
+// 这是用来控制 additionalPrinterColumns 的注释，用来控制 kubectl get cronhpa 的输出
+
 // +kubebuilder:printcolumn:name="Image",type="string",JSONPath=".spec.deployment.image",description="The Docker Image of application"
 // +kubebuilder:printcolumn:name="Size",type="integer",JSONPath=".spec.deployment.replicas",description="Replicas of application"
 // +kubebuilder:printcolumn:name="Age",type="date",JSONPath=".metadata.creationTimestamp"

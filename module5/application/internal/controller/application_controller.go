@@ -23,7 +23,7 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"sigs.k8s.io/controller-runtime/pkg/controller/controllerutil"
 
-	applicationv1 "github/huhouhua/container-research/api/v1"
+	applicationv1 "github/huhouhua/container-research/application/api/v1"
 	appsv1 "k8s.io/api/apps/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 	ctrl "sigs.k8s.io/controller-runtime"
@@ -126,10 +126,10 @@ func (r *ApplicationReconciler) createOrUpdateDeployment(ctx context.Context, ap
 	if err != nil {
 		logger.Error(err, "unable to ensure deployment is correct")
 		app.Status.AvailableReplicas = 0
-		return ctrl.Result{}, nil
+	} else {
+		logger.Info("Deployment created or updated", "Name", deployment.Name)
+		app.Status.AvailableReplicas = int(*deployment.Spec.Replicas)
 	}
-	logger.Info("Deployment created or updated", "Name", deployment.Name)
-	app.Status.AvailableReplicas = int(*deployment.Spec.Replicas)
 	return ctrl.Result{}, nil
 }
 
@@ -158,10 +158,9 @@ func (r *ApplicationReconciler) createOrUpdateService(ctx context.Context, app a
 
 	if err != nil {
 		logger.Error(err, "unable to create or update Service")
-		return ctrl.Result{}, err
+	} else {
+		logger.Info("Service created or updated", "Name", service.Name)
 	}
-
-	logger.Info("Service created or updated", "Name", service.Name)
 	return ctrl.Result{}, err
 }
 
@@ -190,10 +189,9 @@ func (r *ApplicationReconciler) createOrUpdateIngress(ctx context.Context, app a
 
 	if err != nil {
 		logger.Error(err, "unable to create or update Ingress")
-		return ctrl.Result{}, err
+	} else {
+		logger.Info("Ingress created or updated", "Name", ingress.Name)
 	}
-
-	logger.Info("Ingress created or updated", "Name", ingress.Name)
 	return ctrl.Result{}, err
 }
 

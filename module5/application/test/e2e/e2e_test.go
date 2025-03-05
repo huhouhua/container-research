@@ -24,7 +24,7 @@ import (
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
 
-	"github/huhouhua/container-research/test/utils"
+	"github/huhouhua/container-research/application/test/utils"
 )
 
 const namespace = "application-system"

@@ -34,8 +34,8 @@ import (
 	metricsserver "sigs.k8s.io/controller-runtime/pkg/metrics/server"
 	"sigs.k8s.io/controller-runtime/pkg/webhook"
 
-	applicationv1 "github/huhouhua/container-research/api/v1"
-	"github/huhouhua/container-research/internal/controller"
+	applicationv1 "github/huhouhua/container-research/application/api/v1"
+	"github/huhouhua/container-research/application/internal/controller"
 	// +kubebuilder:scaffold:imports
 )
 

@@ -27,7 +27,7 @@ import (
 
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 
-	applicationv1 "github/huhouhua/container-research/api/v1"
+	applicationv1 "github/huhouhua/container-research/application/api/v1"
 )
 
 var _ = Describe("Application Controller", func() {

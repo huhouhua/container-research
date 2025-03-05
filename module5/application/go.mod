@@ -1,4 +1,4 @@
-module github/huhouhua/container-research
+module github/huhouhua/container-research/application
 
 go 1.22.0
 

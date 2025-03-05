@@ -6,7 +6,6 @@ variable "secret_key" {
   default = "Your Access Key"
 }
 
-
 variable "password" {
   default = "password123"
 }

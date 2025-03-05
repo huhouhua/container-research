@@ -32,7 +32,7 @@ import (
 	logf "sigs.k8s.io/controller-runtime/pkg/log"
 	"sigs.k8s.io/controller-runtime/pkg/log/zap"
 
-	applicationv1 "github/huhouhua/container-research/api/v1"
+	applicationv1 "github/huhouhua/container-research/application/api/v1"
 	// +kubebuilder:scaffold:imports
 )
 
