@@ -1,0 +1,1 @@
+{"Modules":[{"Key":"","Source":"","Dir":"."},{"Key":"k3s","Source":"registry.terraform.io/xunleii/k3s/module","Version":"3.4.0","Dir":".terraform/modules/k3s"}]}
