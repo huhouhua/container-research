@@ -1,0 +1,11 @@
+apiVersion: hpa.aiops.com/v1
+kind: PredictHPA
+metadata:
+  labels:
+    app.kubernetes.io/name: hpa-operator
+    app.kubernetes.io/managed-by: kustomize
+  name: predicthpa-sample
+spec:
+  deploymentName: "nginx-qps-deployment"
+  namespace: "default"
+  predictHost: "machine-learning.default.svc.cluster.local:8080"

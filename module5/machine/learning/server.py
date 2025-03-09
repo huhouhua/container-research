@@ -12,7 +12,6 @@ app = Flask(__name__)
 model = joblib.load("time_qps_auto_scaling_model.pkl")
 scaler = joblib.load("time_qps_auto_scaling_scaler.pkl")
 
-
 # 定义函数从 Prometheus 获取 QPS
 # TODO: 验证结果
 def get_qps_from_prometheus():
