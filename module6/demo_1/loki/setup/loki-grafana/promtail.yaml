@@ -1,0 +1,4 @@
+config:
+  clients:
+    - url: http://loki-gateway/loki/api/v1/push #loki网络关服务
+      tenant_id: 1 # 自定义租户ID，主要用来做不同团队的区分
