@@ -4,12 +4,14 @@ variable "region" {
 
 # export TF_VAR_secret_id=
 variable "secret_id" {
- default = ""
+  default = "Your Access ID"
 }
 
 variable "secret_key" {
- default = ""
+  default = "Your Access Key"
 }
+
+
 
 variable "password" {
   default = "password123"

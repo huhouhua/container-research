@@ -7,6 +7,7 @@ variable "secret_key" {
 }
 
 
+
 variable "region" {
   description = "The location where instacne will be created"
   default     = "ap-hongkong"
