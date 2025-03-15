@@ -25,6 +25,9 @@ spec:
               memory: 50Mi
           ports:
             - containerPort: 8000
+          env:
+            - name: APP_NAME
+              value: "app-a"
         - name: siege
           image: yokogawa/siege
           command: ["/bin/sh", "-c"]
